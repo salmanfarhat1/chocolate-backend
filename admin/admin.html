@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Add Chocolate</title>
+</head>
+<body>
+  <h2>Add Chocolate</h2>
+
+  <form id="chocolateForm">
+    <label>Name:</label><br>
+    <input type="text" id="name" required><br><br>
+
+    <label>Ingredients:</label><br>
+    <input type="text" id="ingredients" required><br><br>
+
+    <button type="submit">Add Chocolate</button>
+  </form>
+
+  <div id="result"></div>
+
+  <h2>Add Chocolate Variant</h2>
+
+<form id="variantForm">
+  <label>Chocolate ID:</label><br />
+  <input type="number" id="chocolate_id" required /><br /><br />
+
+  <label>Size:</label><br />
+  <input type="text" id="size" required /><br /><br />
+
+  <label>Weight (grams):</label><br />
+  <input type="number" step="0.01" id="weight" required /><br /><br />
+
+  <label>Price ($):</label><br />
+  <input type="number" step="0.01" id="price" required /><br /><br />
+
+  <label>Photo URLs (comma-separated):</label><br />
+  <input type="text" id="photo_urls" /><br /><br />
+
+  <button type="submit">Add Variant</button>
+</form>
+
+<div id="variantResult" style="margin-top: 10px; color: green;"></div>
+
+
+
+  <script>
+    document.getElementById("chocolateForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+  
+      const name = document.getElementById("name").value.trim();
+      const ingredients = document.getElementById("ingredients").value.trim();
+      const resultDiv = document.getElementById("result");
+  
+      // 🔒 Validation: both fields must be non-empty
+      if (!name || !ingredients) {
+        resultDiv.innerText = "⚠️ Please fill out both name and ingredients.";
+        return;
+      }
+  
+      try {
+        const response = await fetch("http://backend:3000/chocolates", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name, ingredients })
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          resultDiv.innerText = "✅ Chocolate added with ID: " + data.data.id;
+          document.getElementById("chocolateForm").reset(); // clear form
+        } else {
+          resultDiv.innerText = "❌ Failed to add chocolate";
+        }
+      } catch (error) {
+        resultDiv.innerText = "🚨 Network error: " + error.message;
+      }
+    });
+  </script>
+
+<script>
+    document.getElementById("variantForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+  
+      const chocolate_id = parseInt(document.getElementById("chocolate_id").value);
+      const size = document.getElementById("size").value.trim();
+      const weight = parseFloat(document.getElementById("weight").value);
+      const price = parseFloat(document.getElementById("price").value);
+      const photoUrlsRaw = document.getElementById("photo_urls").value.trim();
+  
+      // ✅ convert comma-separated string into array
+      const photo_urls = photoUrlsRaw
+        .split(",")
+        .map(url => url.trim())
+        .filter(url => url !== "");
+  
+      const response = await fetch("http://backend:3000/variants", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chocolate_id,
+          size,
+          weight: isNaN(weight) ? null : weight,
+          price,
+          photo_urls
+        })
+      });
+  
+      const resultDiv = document.getElementById("variantResult");
+      if (response.ok) {
+        const data = await response.json();
+        resultDiv.innerText = "✅ Variant added with ID: " + data.data.id;
+        document.getElementById("variantForm").reset();
+      } else {
+        resultDiv.innerText = "❌ Failed to add variant";
+      }
+    });
+  </script>
+  
+
+
+</body>
+</html>

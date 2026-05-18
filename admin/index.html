@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chocolate Admin</title>
+<style>
+  :root {
+    --bg: #0f0d0b;
+    --bg2: #1a1612;
+    --bg3: #241e18;
+    --border: rgba(255,200,120,0.12);
+    --border2: rgba(255,200,120,0.25);
+    --gold: #c8922a;
+    --gold2: #e8b84b;
+    --text: #f0e8d8;
+    --text2: #a89880;
+    --text3: #6a5a48;
+    --danger: #c0392b;
+    --danger2: #e74c3c;
+    --success: #27ae60;
+    --success2: #2ecc71;
+    --info: #2980b9;
+    --info2: #3498db;
+    --radius: 10px;
+    --radius2: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Georgia', serif;
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* ── Sidebar ── */
+  #sidebar {
+    width: 220px;
+    min-height: 100vh;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .logo {
+    padding: 28px 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+  .logo-title {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold2);
+    font-family: sans-serif;
+  }
+  .logo-sub { font-size: 10px; color: var(--text3); font-family: sans-serif; letter-spacing: 1px; margin-top: 2px; }
+
+  nav { padding: 16px 0; flex: 1; }
+  .nav-section { padding: 8px 20px 4px; font-size: 10px; letter-spacing: 2px; color: var(--text3); font-family: sans-serif; text-transform: uppercase; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: sans-serif; font-size: 13px;
+    color: var(--text2);
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--bg3); color: var(--gold2); border-left-color: var(--gold); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  /* ── Main ── */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  header {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    display: flex; align-items: center; gap: 16px;
+  }
+  .page-title { font-size: 20px; color: var(--text); font-weight: normal; }
+  .page-sub { font-size: 12px; color: var(--text3); font-family: sans-serif; margin-top: 2px; }
+
+  .header-actions { margin-left: auto; display: flex; gap: 10px; }
+
+  .content { padding: 28px 32px; flex: 1; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: var(--radius2);
+    font-family: sans-serif; font-size: 13px;
+    cursor: pointer; border: 1px solid; transition: all 0.15s;
+    text-decoration: none;
+  }
+  .btn-primary { background: var(--gold); border-color: var(--gold); color: #1a0f00; font-weight: 600; }
+  .btn-primary:hover { background: var(--gold2); border-color: var(--gold2); }
+  .btn-ghost { background: transparent; border-color: var(--border2); color: var(--text2); }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-danger { background: transparent; border-color: rgba(192,57,43,0.4); color: var(--danger2); }
+  .btn-danger:hover { background: rgba(192,57,43,0.15); }
+  .btn-success { background: var(--success); border-color: var(--success); color: #fff; font-weight: 600; }
+  .btn-success:hover { background: var(--success2); }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-info { background: transparent; border-color: rgba(41,128,185,0.4); color: var(--info2); }
+  .btn-info:hover { background: rgba(41,128,185,0.15); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .card-title { font-family: sans-serif; font-size: 14px; color: var(--text); }
+  .card-body { padding: 20px; }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 13px; }
+  thead tr { border-bottom: 1px solid var(--border); }
+  th { padding: 10px 12px; text-align: left; color: var(--text3); font-weight: 500; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+  td { padding: 12px 12px; color: var(--text2); border-bottom: 1px solid rgba(255,200,120,0.05); vertical-align: middle; }
+  tbody tr:hover td { background: var(--bg3); }
+  tbody tr:last-child td { border-bottom: none; }
+  .td-name { color: var(--text); font-size: 14px; }
+
+  /* ── Forms ── */
+  .form-group { margin-bottom: 16px; }
+  label { display: block; font-family: sans-serif; font-size: 12px; color: var(--text3); margin-bottom: 6px; letter-spacing: 0.5px; }
+  input[type=text], input[type=number], textarea, select {
+    width: 100%; padding: 9px 12px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius2); color: var(--text);
+    font-family: sans-serif; font-size: 13px;
+    outline: none; transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+  textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 100; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border2);
+    border-radius: var(--radius); width: 560px; max-width: 95vw;
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal-header {
+    padding: 18px 22px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-size: 16px; color: var(--gold2); }
+  .modal-close { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 20px; padding: 0; line-height: 1; }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 22px; }
+  .modal-footer { padding: 16px 22px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* ── Upload Zone ── */
+  .upload-zone {
+    border: 2px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 28px; text-align: center;
+    cursor: pointer; transition: all 0.2s;
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--gold); background: rgba(200,146,42,0.06); }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+  .upload-label { font-family: sans-serif; font-size: 13px; color: var(--text3); }
+  .upload-label span { color: var(--gold2); }
+
+  /* ── Photo Grid ── */
+  .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 12px; }
+  .photo-thumb {
+    position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-thumb .remove-photo {
+    position: absolute; top: 4px; right: 4px;
+    background: rgba(0,0,0,0.7); border: none; border-radius: 50%;
+    width: 20px; height: 20px; cursor: pointer; color: #fff; font-size: 12px;
+    display: flex; align-items: center; justify-content: center; line-height: 1;
+  }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 20px;
+    font-family: sans-serif; font-size: 11px; font-weight: 500;
+  }
+  .badge-gold { background: rgba(200,146,42,0.2); color: var(--gold2); border: 1px solid rgba(200,146,42,0.3); }
+  .badge-gray { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    padding: 12px 18px; border-radius: var(--radius2);
+    font-family: sans-serif; font-size: 13px;
+    opacity: 0; transition: opacity 0.3s; z-index: 999;
+    max-width: 320px;
+  }
+  #toast.show { opacity: 1; }
+  #toast.success { background: #1a3d2b; border: 1px solid rgba(46,204,113,0.3); color: var(--success2); }
+  #toast.error { background: #3d1a1a; border: 1px solid rgba(231,76,60,0.3); color: var(--danger2); }
+
+  /* ── Views ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── Stat cards ── */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+  .stat-label { font-family: sans-serif; font-size: 11px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .stat-value { font-size: 28px; color: var(--gold2); }
+  .stat-sub { font-family: sans-serif; font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* ── Photo preview in table ── */
+  .thumb-row { display: flex; gap: 4px; flex-wrap: wrap; }
+  .thumb-sm { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border); }
+
+  /* ── Loading ── */
+  .loading { text-align: center; padding: 40px; color: var(--text3); font-family: sans-serif; font-size: 13px; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Empty state ── */
+  .empty { text-align: center; padding: 60px 20px; color: var(--text3); font-family: sans-serif; }
+  .empty-icon { font-size: 40px; display: block; margin-bottom: 12px; opacity: 0.5; }
+  .empty-title { font-size: 15px; color: var(--text2); margin-bottom: 8px; }
+  .empty-sub { font-size: 12px; }
+
+  /* ── Search ── */
+  .search-wrap { position: relative; }
+  .search-wrap input { padding-left: 32px; }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; }
+
+  select option { background: var(--bg3); }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div id="sidebar">
+  <div class="logo">
+    <span class="logo-icon">🍫</span>
+    <div class="logo-title">Chocolaterie</div>
+    <div class="logo-sub">Admin Portal</div>
+  </div>
+  <nav>
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" data-view="dashboard">
+      <span class="nav-icon">◈</span> Dashboard
+    </div>
+    <div class="nav-section">Catalogue</div>
+    <div class="nav-item" data-view="chocolates">
+      <span class="nav-icon">🍫</span> Chocolates
+    </div>
+    <div class="nav-item" data-view="variants">
+      <span class="nav-icon">⊞</span> Variants
+    </div>
+    <div class="nav-section">Assets</div>
+    <div class="nav-item" data-view="photos">
+      <span class="nav-icon">◻</span> Photos
+    </div>
+  </nav>
+</div>
+
+<!-- Main -->
+<div id="main">
+
+  <header>
+    <div>
+      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="page-sub" id="page-sub">Overview of your catalogue</div>
+    </div>
+    <div class="header-actions" id="header-actions"></div>
+  </header>
+
+  <div class="content">
+
+    <!-- Dashboard -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Chocolates</div><div class="stat-value" id="stat-choc">–</div><div class="stat-sub">products in catalogue</div></div>
+        <div class="stat-card"><div class="stat-label">Variants</div><div class="stat-value" id="stat-var">–</div><div class="stat-sub">size/weight options</div></div>
+        <div class="stat-card"><div class="stat-label">Photos</div><div class="stat-value" id="stat-photos">–</div><div class="stat-sub">uploaded assets</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Recent Chocolates</div></div>
+        <div class="card-body" id="dash-list"><div class="loading"><div class="spinner"></div><br>Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- Chocolates -->
+    <div class="view" id="view-chocolates">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;">
+        <div class="search-wrap" style="flex:1;">
+          <span class="search-icon">⌕</span>
+          <input type="text" id="choc-search" placeholder="Search chocolates…" oninput="filterChocolates()">
+        </div>
+      </div>
+      <div class="card">
+        <div id="choc-table-wrap"><div class="loading"><div class="spinner"></div><br>Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- Variants -->
+    <div class="view" id="view-variants">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;">
+        <select id="variant-filter" onchange="filterVariants()" style="width:220px;">
+          <option value="">All chocolates</option>
+        </select>
+      </div>
+      <div class="card">
+        <div id="variant-table-wrap"><div class="loading"><div class="spinner"></div><br>Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- Photos -->
+    <div class="view" id="view-photos">
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header"><div class="card-title">Upload Photos</div></div>
+        <div class="card-body">
+          <div class="upload-zone" id="global-upload-zone">
+            <input type="file" id="global-photo-input" accept="image/*" multiple onchange="handleGlobalUpload(this.files)">
+            <span class="upload-icon">◻</span>
+            <div class="upload-label">Drop images here or <span>browse files</span></div>
+            <div style="font-family:sans-serif;font-size:11px;color:var(--text3);margin-top:4px;">PNG, JPG, WEBP — multiple files allowed</div>
+          </div>
+          <div id="global-upload-preview" class="photo-grid"></div>
+          <div id="global-upload-status" style="font-family:sans-serif;font-size:12px;color:var(--text3);margin-top:8px;"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Assign Photos to Chocolates</div></div>
+        <div class="card-body">
+          <div class="form-row" style="margin-bottom:16px;">
+            <div class="form-group">
+              <label>Select Chocolate</label>
+              <select id="assign-choc-select">
+                <option value="">— choose —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Photo URLs (one per line or comma-separated)</label>
+              <textarea id="assign-urls" placeholder="/photos/filename.jpg" style="min-height:60px;"></textarea>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="assignPhotos()">Assign URLs to Chocolate</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Chocolate Modal ── -->
+<div class="modal-overlay" id="modal-choc">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-choc-title">New Chocolate</div>
+      <button class="modal-close" onclick="closeModal('modal-choc')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="choc-id">
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" id="choc-name" placeholder="e.g. Dark Delight">
+      </div>
+      <div class="form-group">
+        <label>Ingredients</label>
+        <textarea id="choc-ingredients" placeholder="Cocoa, Sugar, Milk…"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Upload Photos</label>
+        <div class="upload-zone" id="modal-upload-zone">
+          <input type="file" id="modal-photo-input" accept="image/*" multiple onchange="handleModalUpload(this.files)">
+          <span class="upload-icon" style="font-size:22px;">◻</span>
+          <div class="upload-label" style="font-size:12px;">Drop images or <span>browse</span></div>
+        </div>
+        <div id="modal-upload-status" style="font-family:sans-serif;font-size:11px;color:var(--text3);margin-top:6px;"></div>
+        <div id="modal-photo-preview" class="photo-grid"></div>
+      </div>
+      <div class="form-group">
+        <label>Photo URLs (existing — one per line)</label>
+        <textarea id="choc-photos" placeholder="/photos/dark_delight_1.jpg&#10;/photos/dark_delight_2.jpg" style="min-height:70px;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-choc')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveChocolate()">Save Chocolate</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Variant Modal ── -->
+<div class="modal-overlay" id="modal-variant">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-variant-title">New Variant</div>
+      <button class="modal-close" onclick="closeModal('modal-variant')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="variant-id">
+      <div class="form-group">
+        <label>Chocolate *</label>
+        <select id="variant-choc-id">
+          <option value="">— select chocolate —</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Size *</label>
+          <input type="text" id="variant-size" placeholder="e.g. Medium">
+        </div>
+        <div class="form-group">
+          <label>Weight (g)</label>
+          <input type="number" id="variant-weight" placeholder="e.g. 250" step="0.01">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Price (€) *</label>
+        <input type="number" id="variant-price" placeholder="e.g. 12.99" step="0.01">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-variant')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveVariant()">Save Variant</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Delete Confirm Modal ── -->
+<div class="modal-overlay" id="modal-delete">
+  <div class="modal" style="width:420px;">
+    <div class="modal-header">
+      <div class="modal-title" style="color:var(--danger2);">Confirm Delete</div>
+      <button class="modal-close" onclick="closeModal('modal-delete')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-family:sans-serif;font-size:14px;color:var(--text2);" id="delete-msg">Are you sure? This cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-delete')">Cancel</button>
+      <button class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+const API = 'http://localhost:3000';
+
+let chocolates = [];
+let variants = [];
+let modalPendingUrls = [];
+
+// ── Navigation ──────────────────────────────────────────────────────────────
+const pageInfo = {
+  dashboard:  { title: 'Dashboard',  sub: 'Overview of your catalogue', actions: '' },
+  chocolates: { title: 'Chocolates', sub: 'Manage products',            actions: '<button class="btn btn-primary btn-sm" onclick="openNewChocolate()">+ Add Chocolate</button>' },
+  variants:   { title: 'Variants',   sub: 'Sizes, weights & prices',    actions: '<button class="btn btn-primary btn-sm" onclick="openNewVariant()">+ Add Variant</button>' },
+  photos:     { title: 'Photos',     sub: 'Upload and assign images',   actions: '' },
+};
+
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    el.classList.add('active');
+    const view = el.dataset.view;
+    document.getElementById('view-' + view).classList.add('active');
+    const info = pageInfo[view];
+    document.getElementById('page-title').textContent = info.title;
+    document.getElementById('page-sub').textContent = info.sub;
+    document.getElementById('header-actions').innerHTML = info.actions;
+    if (view === 'dashboard') loadDashboard();
+    if (view === 'chocolates') renderChocolateTable();
+    if (view === 'variants') renderVariantTable();
+  });
+});
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = ''; }, 3000);
+}
+
+// ── Modal helpers ─────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ── API helpers ───────────────────────────────────────────────────────────────
+async function apiFetch(path, opts={}) {
+  const res = await fetch(API + path, { headers: {'Content-Type':'application/json'}, ...opts });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => res.statusText);
+    throw new Error(txt || res.statusText);
+  }
+  return res.json().catch(() => ({}));
+}
+
+// ── Load data ─────────────────────────────────────────────────────────────────
+async function loadChocolates() {
+  chocolates = await apiFetch('/chocolates');
+  if (!Array.isArray(chocolates)) chocolates = [];
+}
+
+async function loadVariants() {
+  variants = await apiFetch('/variants');
+  if (!Array.isArray(variants)) variants = [];
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    await Promise.all([loadChocolates(), loadVariants()]);
+    const photos = chocolates.reduce((a, c) => a + (c.photo_urls ? c.photo_urls.length : 0), 0);
+    document.getElementById('stat-choc').textContent = chocolates.length;
+    document.getElementById('stat-var').textContent = variants.length;
+    document.getElementById('stat-photos').textContent = photos;
+
+    const recent = chocolates.slice(0, 5);
+    const el = document.getElementById('dash-list');
+    if (!recent.length) { el.innerHTML = '<div class="empty"><span class="empty-icon">🍫</span><div class="empty-title">No chocolates yet</div><div class="empty-sub">Add your first product from the Chocolates tab</div></div>'; return; }
+    el.innerHTML = '<table><thead><tr><th>Name</th><th>Ingredients</th><th>Photos</th><th>Variants</th></tr></thead><tbody>' +
+      recent.map(c => {
+        const cv = variants.filter(v => v.chocolate_id === c.id);
+        const photos = c.photo_urls || [];
+        return `<tr>
+          <td class="td-name">${esc(c.name)}</td>
+          <td>${esc(c.ingredients || '—')}</td>
+          <td>${photos.slice(0,3).map(u => `<img class="thumb-sm" src="${API}${u}" onerror="this.style.display='none'">`).join('')}</td>
+          <td><span class="badge badge-gold">${cv.length} variant${cv.length !== 1 ? 's' : ''}</span></td>
+        </tr>`;
+      }).join('') + '</tbody></table>';
+  } catch(e) { document.getElementById('dash-list').innerHTML = '<div class="empty"><div class="empty-title">Could not load data</div><div class="empty-sub">' + e.message + '</div></div>'; }
+}
+
+// ── Chocolates Table ───────────────────────────────────────────────────────────
+async function renderChocolateTable() {
+  const wrap = document.getElementById('choc-table-wrap');
+  wrap.innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading…</div>';
+  try {
+    await Promise.all([loadChocolates(), loadVariants()]);
+    populateChocSelects();
+    displayChocolateTable(chocolates);
+  } catch(e) { wrap.innerHTML = `<div class="empty"><div class="empty-title">Error</div><div class="empty-sub">${e.message}</div></div>`; }
+}
+
+function filterChocolates() {
+  const q = document.getElementById('choc-search').value.toLowerCase();
+  displayChocolateTable(chocolates.filter(c => c.name.toLowerCase().includes(q) || (c.ingredients||'').toLowerCase().includes(q)));
+}
+
+function displayChocolateTable(list) {
+  const wrap = document.getElementById('choc-table-wrap');
+  if (!list.length) { wrap.innerHTML = '<div class="empty"><span class="empty-icon">🍫</span><div class="empty-title">No chocolates found</div><div class="empty-sub">Add your first product above</div></div>'; return; }
+  wrap.innerHTML = '<table><thead><tr><th>ID</th><th>Name</th><th>Ingredients</th><th>Photos</th><th>Variants</th><th>Actions</th></tr></thead><tbody>' +
+    list.map(c => {
+      const cv = variants.filter(v => v.chocolate_id === c.id).length;
+      const photos = c.photo_urls || [];
+      const thumbs = photos.slice(0,3).map(u => `<img class="thumb-sm" src="${API}${u}" onerror="this.style.display='none'">`).join('');
+      return `<tr>
+        <td style="color:var(--text3)">#${c.id}</td>
+        <td class="td-name">${esc(c.name)}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(c.ingredients||'—')}</td>
+        <td><div class="thumb-row">${thumbs || '<span style="color:var(--text3);font-size:11px;font-family:sans-serif">none</span>'}</div></td>
+        <td><span class="badge ${cv ? 'badge-gold' : 'badge-gray'}">${cv}</span></td>
+        <td>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-info btn-sm" onclick="openEditChocolate(${c.id})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="confirmDelete('chocolate', ${c.id}, '${esc(c.name)}')">Del</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('') + '</tbody></table>';
+}
+
+// ── Chocolate Modal ────────────────────────────────────────────────────────────
+function openNewChocolate() {
+  document.getElementById('modal-choc-title').textContent = 'New Chocolate';
+  document.getElementById('choc-id').value = '';
+  document.getElementById('choc-name').value = '';
+  document.getElementById('choc-ingredients').value = '';
+  document.getElementById('choc-photos').value = '';
+  document.getElementById('modal-photo-preview').innerHTML = '';
+  document.getElementById('modal-upload-status').textContent = '';
+  modalPendingUrls = [];
+  openModal('modal-choc');
+}
+
+function openEditChocolate(id) {
+  const c = chocolates.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modal-choc-title').textContent = 'Edit Chocolate';
+  document.getElementById('choc-id').value = c.id;
+  document.getElementById('choc-name').value = c.name;
+  document.getElementById('choc-ingredients').value = c.ingredients || '';
+  document.getElementById('choc-photos').value = (c.photo_urls || []).join('\n');
+  document.getElementById('modal-photo-preview').innerHTML = '';
+  document.getElementById('modal-upload-status').textContent = '';
+  modalPendingUrls = [];  // ← start fresh, existing URLs are already in the textarea
+  openModal('modal-choc');
+}
+
+async function saveChocolate() {
+  const id = document.getElementById('choc-id').value;
+  const name = document.getElementById('choc-name').value.trim();
+  const ingredients = document.getElementById('choc-ingredients').value.trim();
+  const textareaUrls = document.getElementById('choc-photos').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  
+  if (!name) { toast('Name is required', 'error'); return; }
+
+// Use ONLY the textarea value — it's the source of truth
+  const photo_urls = document.getElementById('choc-photos').value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  const body = JSON.stringify({ name, ingredients, photo_urls });
+
+  try {
+    if (id) {
+      await apiFetch('/chocolates/' + id, { method: 'PUT', body });
+      toast('Chocolate updated!');
+    } else {
+      await apiFetch('/chocolates', { method: 'POST', body });
+      toast('Chocolate created!');
+    }
+    closeModal('modal-choc');
+    renderChocolateTable();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── Variants Table ─────────────────────────────────────────────────────────────
+async function renderVariantTable() {
+  const wrap = document.getElementById('variant-table-wrap');
+  wrap.innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading…</div>';
+  try {
+    await Promise.all([loadChocolates(), loadVariants()]);
+    populateChocSelects();
+    displayVariantTable(variants);
+  } catch(e) { wrap.innerHTML = `<div class="empty"><div class="empty-title">Error</div><div class="empty-sub">${e.message}</div></div>`; }
+}
+
+function filterVariants() {
+  const cid = document.getElementById('variant-filter').value;
+  displayVariantTable(cid ? variants.filter(v => String(v.chocolate_id) === cid) : variants);
+}
+
+function displayVariantTable(list) {
+  const wrap = document.getElementById('variant-table-wrap');
+  if (!list.length) { wrap.innerHTML = '<div class="empty"><span class="empty-icon">⊞</span><div class="empty-title">No variants found</div><div class="empty-sub">Add your first variant above</div></div>'; return; }
+  wrap.innerHTML = '<table><thead><tr><th>ID</th><th>Chocolate</th><th>Size</th><th>Weight</th><th>Price</th><th>Actions</th></tr></thead><tbody>' +
+    list.map(v => {
+      const choc = chocolates.find(c => c.id === v.chocolate_id);
+      return `<tr>
+        <td style="color:var(--text3)">#${v.id}</td>
+        <td class="td-name">${esc(choc ? choc.name : 'Unknown')}</td>
+        <td>${esc(v.size)}</td>
+        <td>${v.weight ? v.weight + ' g' : '—'}</td>
+        <td style="color:var(--gold2);font-family:sans-serif;">€${parseFloat(v.price).toFixed(2)}</td>
+        <td>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-info btn-sm" onclick="openEditVariant(${v.id})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="confirmDelete('variant', ${v.id}, '${esc(v.size)}')">Del</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('') + '</tbody></table>';
+}
+
+// ── Variant Modal ──────────────────────────────────────────────────────────────
+function openNewVariant() {
+  document.getElementById('modal-variant-title').textContent = 'New Variant';
+  document.getElementById('variant-id').value = '';
+  document.getElementById('variant-choc-id').value = '';
+  document.getElementById('variant-size').value = '';
+  document.getElementById('variant-weight').value = '';
+  document.getElementById('variant-price').value = '';
+  openModal('modal-variant');
+}
+
+function openEditVariant(id) {
+  const v = variants.find(x => x.id === id);
+  if (!v) return;
+  document.getElementById('modal-variant-title').textContent = 'Edit Variant';
+  document.getElementById('variant-id').value = v.id;
+  document.getElementById('variant-choc-id').value = v.chocolate_id;
+  document.getElementById('variant-size').value = v.size;
+  document.getElementById('variant-weight').value = v.weight || '';
+  document.getElementById('variant-price').value = v.price;
+  openModal('modal-variant');
+}
+
+async function saveVariant() {
+  const id = document.getElementById('variant-id').value;
+  const chocolate_id = parseInt(document.getElementById('variant-choc-id').value);
+  const size = document.getElementById('variant-size').value.trim();
+  const weight = document.getElementById('variant-weight').value;
+  const price = parseFloat(document.getElementById('variant-price').value);
+
+  if (!chocolate_id) { toast('Select a chocolate', 'error'); return; }
+  if (!size) { toast('Size is required', 'error'); return; }
+  if (!price || isNaN(price)) { toast('Valid price required', 'error'); return; }
+
+  const body = JSON.stringify({ chocolate_id, size, weight: weight ? parseFloat(weight) : null, price });
+  try {
+    if (id) {
+      await apiFetch('/variants/' + id, { method: 'PUT', body });
+      toast('Variant updated!');
+    } else {
+      await apiFetch('/variants', { method: 'POST', body });
+      toast('Variant created!');
+    }
+    closeModal('modal-variant');
+    renderVariantTable();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── Delete Confirm ─────────────────────────────────────────────────────────────
+function confirmDelete(type, id, name) {
+  document.getElementById('delete-msg').textContent = `Delete ${type} "${name}" (ID: ${id})? This cannot be undone.`;
+  const btn = document.getElementById('confirm-delete-btn');
+  btn.onclick = async () => {
+    try {
+      const path = type === 'chocolate' ? `/chocolates/${id}` : `/variants/${id}`;
+      await apiFetch(path, { method: 'DELETE' });
+      toast(`${type} deleted`);
+      closeModal('modal-delete');
+      if (type === 'chocolate') renderChocolateTable();
+      else renderVariantTable();
+    } catch(e) { toast(e.message, 'error'); }
+  };
+  openModal('modal-delete');
+}
+
+// ── Photo Upload ───────────────────────────────────────────────────────────────
+async function uploadPhoto(file) {
+  const fd = new FormData();
+  fd.append('photo', file);
+  const res = await fetch(`${API}/photos/upload`, { method: 'POST', body: fd });
+  if (!res.ok) throw new Error(await res.text());
+  const data = await res.json();
+  return data.url || data.path || data.filename;
+}
+
+function photoThumb(url, removable=false) {
+  const fullUrl = url.startsWith('http') ? url : API + url;
+  return `<div class="photo-thumb">
+    <img src="${fullUrl}" onerror="this.parentElement.style.display='none'">
+    ${removable ? `<button class="remove-photo" onclick="removeModalPhoto('${url}')">✕</button>` : ''}
+  </div>`;
+}
+
+function removeModalPhoto(url) {
+  modalPendingUrls = modalPendingUrls.filter(u => u !== url);
+  document.getElementById('modal-photo-preview').innerHTML = modalPendingUrls.map(u => photoThumb(u, true)).join('');
+  // sync textarea
+  document.getElementById('choc-photos').value = modalPendingUrls.join('\n');
+}
+
+async function handleModalUpload(files) {
+  const status = document.getElementById('modal-upload-status');
+  const preview = document.getElementById('modal-photo-preview');
+  if (!files.length) return;
+  status.textContent = `Uploading ${files.length} file(s)…`;
+  let success = 0;
+  for (const file of files) {
+    try {
+      const url = await uploadPhoto(file);
+      modalPendingUrls.push(url);
+      preview.innerHTML += photoThumb(url, true);
+      success++;
+    } catch(e) { toast('Upload failed: ' + e.message, 'error'); }
+  }
+  status.textContent = success ? `✓ ${success} photo(s) uploaded` : '';
+  document.getElementById('choc-photos').value = modalPendingUrls.join('\n');
+}
+
+async function handleGlobalUpload(files) {
+  const status = document.getElementById('global-upload-status');
+  const preview = document.getElementById('global-upload-preview');
+  if (!files.length) return;
+  status.textContent = `Uploading ${files.length} file(s)…`;
+  let success = 0;
+  for (const file of files) {
+    try {
+      const url = await uploadPhoto(file);
+      preview.innerHTML += photoThumb(url);
+      success++;
+    } catch(e) { toast('Upload failed: ' + e.message, 'error'); }
+  }
+  status.textContent = success ? `✓ ${success} file(s) uploaded successfully` : '';
+}
+
+async function assignPhotos() {
+  const cid = document.getElementById('assign-choc-select').value;
+  if (!cid) { toast('Select a chocolate', 'error'); return; }
+  const raw = document.getElementById('assign-urls').value;
+  const urls = raw.split(/[\n,]/).map(s=>s.trim()).filter(Boolean);
+  if (!urls.length) { toast('Enter at least one URL', 'error'); return; }
+  const choc = chocolates.find(c => String(c.id) === cid);
+  const existing = choc ? (choc.photo_urls || []) : [];
+  const photo_urls = [...new Set([...existing, ...urls])];
+  try {
+    await apiFetch('/chocolates/' + cid, { method: 'PUT', body: JSON.stringify({ ...choc, photo_urls }) });
+    toast('Photos assigned!');
+    document.getElementById('assign-urls').value = '';
+    await loadChocolates();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── Drag & Drop ────────────────────────────────────────────────────────────────
+['global-upload-zone','modal-upload-zone'].forEach(zid => {
+  const z = document.getElementById(zid);
+  if (!z) return;
+  z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('dragover'); });
+  z.addEventListener('dragleave', () => z.classList.remove('dragover'));
+  z.addEventListener('drop', e => {
+    e.preventDefault(); z.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (zid === 'global-upload-zone') handleGlobalUpload(files);
+    else handleModalUpload(files);
+  });
+});
+
+// ── Populate selects ───────────────────────────────────────────────────────────
+function populateChocSelects() {
+  const opts = chocolates.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  ['variant-choc-id','variant-filter','assign-choc-select'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const first = el.options[0].outerHTML;
+    el.innerHTML = first + opts;
+  });
+}
+
+// ── Utils ──────────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+loadDashboard();
+</script>
+</body>
+</html>
