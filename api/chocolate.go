@@ -8,8 +8,8 @@ import (
 	"database/sql"
 
 	"github.com/gorilla/mux"
-	"github.com/salmanfarhat1/chocolate_website/tree/main/backend/db"
-	"github.com/salmanfarhat1/chocolate_website/tree/main/backend/models"
+	"github.com/salmanfarhat1/chocolate-backend/db"
+	"github.com/salmanfarhat1/chocolate-backend/models"
 )
 
 func GetChocolatesHandler(dbConn *sql.DB) http.HandlerFunc {

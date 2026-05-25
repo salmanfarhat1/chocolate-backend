@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/lib/pq"
-	"github.com/salmanfarhat1/chocolate_website/tree/main/backend/models"
+	"github.com/salmanfarhat1/chocolate-backend/models"
 )
 
 func GetChocolates(db *sql.DB) ([]models.Chocolate, error) {

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/salmanfarhat1/chocolate_website/tree/main/backend/models"
+	"github.com/salmanfarhat1/chocolate-backend/models"
 )
 
 func GetVariantsByChocolateID(db *sql.DB, chocolateID int) ([]models.Variants, error) {

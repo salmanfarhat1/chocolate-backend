@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/salmanfarhat1/chocolate_website/tree/main/backend/db"
-	"github.com/salmanfarhat1/chocolate_website/tree/main/backend/models"
+	"github.com/salmanfarhat1/chocolate-backend/db"
+	"github.com/salmanfarhat1/chocolate-backend/models"
 )
 
 func CreateChocolateHandler(dbConn *sql.DB) http.HandlerFunc {

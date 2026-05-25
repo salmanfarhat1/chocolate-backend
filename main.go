@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
-	"github.com/salmanfarhat1/chocolate_website/tree/main/backend/api"
-	"github.com/salmanfarhat1/chocolate_website/tree/main/backend/db"
+	"github.com/salmanfarhat1/chocolate-backend/api"
+	"github.com/salmanfarhat1/chocolate-backend/db"
 )
 
 func main() {
@@ -16,7 +18,6 @@ func main() {
 	r := mux.NewRouter()
 
 	// Routes
-
 	r.HandleFunc("/", api.HelloHandler).Methods("GET")
 
 	r.HandleFunc("/chocolates", api.GetChocolatesHandler(dbConn)).Methods("GET")
@@ -34,6 +35,12 @@ func main() {
 	r.PathPrefix("/photos/").Handler(http.StripPrefix("/photos/", http.FileServer(http.Dir("./photos"))))
 	r.PathPrefix("/admin/").Handler(http.StripPrefix("/admin/", http.FileServer(http.Dir("./admin"))))
 
-	fmt.Println("Server on http://localhost:3000")
-	http.ListenAndServe(":3000", r)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	fmt.Println("Server running on :" + port)
+
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }

@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/salmanfarhat1/chocolate_website/tree/main/backend/db"
+	"github.com/salmanfarhat1/chocolate-backend/db"
 )
 
 func GetVariantsByChocolateIDHandler(dbConn *sql.DB) http.HandlerFunc {
