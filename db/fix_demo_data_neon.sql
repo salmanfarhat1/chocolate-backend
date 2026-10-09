@@ -1,29 +1,18 @@
 -- =====================================================================
--- Demo data fixes for NEON (prod)
--- NOTE: Neon's data differs from local — its 6 chocolates are:
+-- ⚠️  NEON (prod) ONLY — do NOT run this on your local database!
+--     It DELETES all variants, and local has different product names.
+--
+-- Clean rebuild of variants + photo fix for Neon's real data:
 --   id 1 Dark Delight, 2 Tiramisu, 4 Angel,
 --   id 5 Surprise, 6 Lazy, 7 Peanut Butter   (there is NO id 3)
--- Idempotent: safe to run multiple times.
 -- =====================================================================
 
--- 1) Every chocolate gets one of the 6 real photo files.
---    Assigned by id order (id -> rank 1..6), because Neon's ids are not 1..6
---    and the old data left id 7 pointing at a non-existent dark_large_7.jpg.
-WITH ranked AS (
-  SELECT id, row_number() OVER (ORDER BY id) AS rn FROM chocolates
-)
-UPDATE chocolates c
-SET photo_urls = ARRAY[
-  '/photos/dark_large_' || r.rn || '.jpg',
-  '/photos/dark_small_'  || r.rn || '.jpg'
-]
-FROM ranked r
-WHERE c.id = r.id AND r.rn <= 6;
+BEGIN;
 
--- 2) Make sure every chocolate has variants.
---    Matched by chocolate NAME (lowercased) instead of id, so it works
---    even when the id sequences differ between local and Neon.
---    Idempotent: skips any (chocolate_id, size) that already exists.
+-- 1) Remove ALL existing variants (kills the duplicated / €1.00 junk rows)
+DELETE FROM chocolate_variants;
+
+-- 2) Fresh insert: exactly 2 variants per chocolate, matched by name
 INSERT INTO chocolate_variants (chocolate_id, size, weight, price)
 SELECT c.id, v.size, v.weight, v.price
 FROM (VALUES
@@ -40,18 +29,24 @@ FROM (VALUES
   ('peanut butter', 'Small',  50.00,  3.29),
   ('peanut butter', 'Medium', 100.00, 5.79)
 ) AS v(choco_name, size, weight, price)
-JOIN chocolates c ON lower(c.name) = v.choco_name
-WHERE NOT EXISTS (
-  SELECT 1 FROM chocolate_variants cv
-  WHERE cv.chocolate_id = c.id AND cv.size = v.size
-);
+JOIN chocolates c ON lower(c.name) = v.choco_name;
 
--- 3) Diagnostics: what ids/names does this database actually have?
-SELECT id, name FROM chocolates ORDER BY id;
-SELECT chocolate_id, size, weight, price
-FROM chocolate_variants ORDER BY chocolate_id, price;
+COMMIT;
 
--- 4) Verification query — every row must show 2 variants
+-- 3) Photo paths: assign the 6 real files by id order
+--    (fixes any row pointing at a non-existent file like dark_large_7.jpg)
+WITH ranked AS (
+  SELECT id, row_number() OVER (ORDER BY id) AS rn FROM chocolates
+)
+UPDATE chocolates c
+SET photo_urls = ARRAY[
+  '/photos/dark_large_' || r.rn || '.jpg',
+  '/photos/dark_small_'  || r.rn || '.jpg'
+]
+FROM ranked r
+WHERE c.id = r.id AND r.rn <= 6;
+
+-- 4) Verification — every row: exactly 2 variants, 6 photo pairs, no €1.00 junk
 SELECT c.id, c.name, c.photo_urls,
        string_agg(v.size || ' ' || v.weight::int || 'g @ €' || v.price,
                   ' | ' ORDER BY v.price) AS variants
@@ -59,3 +54,6 @@ FROM chocolates c
 LEFT JOIN chocolate_variants v ON v.chocolate_id = c.id
 GROUP BY c.id, c.name, c.photo_urls
 ORDER BY c.id;
+
+-- Should return: 12 rows total in chocolate_variants, none priced €1.00
+SELECT count(*) AS total_variants FROM chocolate_variants;
