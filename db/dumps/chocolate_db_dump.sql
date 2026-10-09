@@ -137,12 +137,12 @@ COPY public.chocolate_variants (id, chocolate_id, size, weight, price) FROM stdi
 --
 
 COPY public.chocolates (id, name, ingredients, photo_urls) FROM stdin;
-1	Dark Delight	Cocoa, Sugar, Milk	{/photos/dark_large_3.jpg,/photos/dark_small_1.jpg}
-2	Hazelnut Delight	Cocoa, Sugar, Hazelnuts	{/photos/dark_large_3.jpg,/photos/dark_small_1.jpg}
-3	Snickers	Peanut butter, nuts	{/photos/dark_large_3.jpg,/photos/dark_small_1.jpg}
-4	Angel	Cotton candy, pistachio	{/photos/dark_large_3.jpg,/photos/dark_small_1.jpg}
-5	Test	Surprise	{/photos/dark_large_3.jpg,/photos/dark_small_1.jpg}
-6	Lazy	Biscuits, milk concentrate, pistachio	{/photos/dark_large_3.jpg,/photos/dark_small_1.jpg}
+1	Dark Delight	Cocoa, Sugar, Milk	{/photos/dark_large_1.jpg,/photos/dark_small_1.jpg}
+2	Hazelnut Delight	Cocoa, Sugar, Hazelnuts	{/photos/dark_large_2.jpg,/photos/dark_small_2.jpg}
+3	Snickers	Peanut butter, nuts	{/photos/dark_large_3.jpg,/photos/dark_small_3.jpg}
+4	Angel	Cotton candy, pistachio	{/photos/dark_large_4.jpg,/photos/dark_small_4.jpg}
+5	Test	Surprise	{/photos/dark_large_5.jpg,/photos/dark_small_5.jpg}
+6	Lazy	Biscuits, milk concentrate, pistachio	{/photos/dark_large_6.jpg,/photos/dark_small_6.jpg}
 \.
 
 
