@@ -479,7 +479,10 @@
 <div id="toast"></div>
 
 <script>
-const API = 'https://chocolate-backend-wo4m.onrender.com';
+// Same-origin: this admin page is served by the backend itself, so an empty
+// API base works both on http://localhost:3000/admin/ and on the Render URL —
+// no need to switch the URL when moving between local and prod.
+const API = '';
 let chocolates = [];
 let variants = [];
 let modalPendingUrls = [];
